@@ -112,6 +112,14 @@ mlflow ui
 4. **Pandera** for schema + statistical validation before features.
 5. **Three MLflow runs** compared; best macro-F1 promoted to `model_store/sentiment_model.joblib`.
 
+## Process updates
+
+See [`reports/PROCESS_UPDATES.md`](reports/PROCESS_UPDATES.md) for:
+
+- progress completed till now
+- M1 foundation checklist
+- pending items to close **Week 1 / M2** (and M1 polish)
+
 ## Team
 
 - Org: https://github.com/bits-pgaiml-mle
