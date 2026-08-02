@@ -248,3 +248,11 @@ monitoring/logs/*.csv
 mlruns/
 mlartifacts/
 .DS_Store
+
+# Generated / dropped external datasets (keep READMEs)
+data/external/synthetic/
+data/external/kaggle/**/*.csv
+data/external/kaggle/**/*.png
+data/external/kaggle/**/*.jpg
+data/external/kaggle/**/*.jpeg
+data/external/kaggle/casting/

@@ -27,6 +27,16 @@ pip install -r requirements.txt
 
 Run all commands from the **repo root**.
 
+### 1.1b Data source: synthetic / Kaggle / both
+
+```powershell
+python data/prepare_dataset.py --source synthetic
+python data/prepare_dataset.py --source kaggle
+python data/prepare_dataset.py --source both
+```
+
+Or set `configs/data_source.yaml`. Drop a reviews CSV at `data/external/kaggle/reviews_sample.csv` — see that folder’s README. `run_m2_pipeline.py` calls `prepare_dataset.py`.
+
 ### 1.2 Option A — easiest (recommended)
 
 ```powershell
@@ -56,7 +66,7 @@ python monitoring/check_drift.py
 ### 1.3 Option B — step by step
 
 ```powershell
-python data/generate_data.py
+python data/prepare_dataset.py --source synthetic
 python data/validate.py
 python features/build_features.py
 python training/train.py
@@ -67,7 +77,7 @@ python monitoring/check_drift.py
 
 | Step | Entry file |
 |------|------------|
-| Generate tickets | `data/generate_data.py` |
+| Prepare tickets | `data/prepare_dataset.py` (`--source synthetic\|kaggle\|both`) |
 | Validate | `data/validate.py` |
 | Features | `features/build_features.py` |
 | Train | `training/train.py` |
