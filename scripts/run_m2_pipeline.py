@@ -13,8 +13,10 @@ def run(args: list[str]) -> None:
 
 
 def main() -> None:
-    run(["scripts/run_train.py"])
-    print("\nFull pipeline alias complete (same as scripts/run_train.py).")
+    run(["data/generate_data.py"])
+    run(["data/validate.py"])
+    run(["features/build_features.py"])
+    print("\nM2 pipeline complete (generate -> validate -> feature store).")
 
 
 if __name__ == "__main__":

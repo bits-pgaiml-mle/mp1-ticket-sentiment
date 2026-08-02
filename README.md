@@ -55,7 +55,10 @@ mp1-ticket-sentiment/
 ├── model_store/
 ├── reports/
 ├── configs/config.yaml
-└── scripts/run_pipeline.py
+└── scripts/
+    ├── run_m2_pipeline.py   # Option A: Week 1 / M2
+    ├── run_train.py         # Option A: M2 + M3
+    └── run_pipeline.py      # alias for run_train.py
 ```
 
 ## Setup
@@ -67,13 +70,21 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Run (aligned with Taxila tutorial flow)
+## Run (same approach as Flavor A)
+
+### Option A — easiest (recommended)
 
 ```bash
-python scripts/run_pipeline.py
+python scripts/run_m2_pipeline.py
+python scripts/run_train.py
+uvicorn serving.api:app --reload --port 8000
+python monitoring/simulate_concept_drift.py
+python monitoring/check_drift.py
 ```
 
-Or step by step:
+`scripts/run_pipeline.py` is kept as an alias for `scripts/run_train.py`.
+
+### Option B — step by step
 
 ```bash
 python data/generate_data.py
