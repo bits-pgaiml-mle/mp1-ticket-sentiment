@@ -216,3 +216,18 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project artifacts
+data/raw/*.csv
+data/processed/*.csv
+!data/**/.gitkeep
+models/*.joblib
+models/*.pkl
+!models/.gitkeep
+monitoring/logs/*.csv
+!monitoring/logs/.gitkeep
+mlruns/
+mlartifacts/
+.dvc/cache/
+*.dvc.tmp
+.DS_Store

@@ -1,0 +1,37 @@
+project:
+  name: mp1-ticket-sentiment
+  flavor: C
+  course: PCAM ZC412
+  target: label
+  classes:
+    - negative
+    - neutral
+    - positive
+
+data:
+  raw_path: data/raw/tickets.csv
+  processed_path: data/processed/tickets_features.csv
+  sample_size: 1500
+  random_seed: 42
+
+features:
+  vectorizer: tfidf
+  max_features: 5000
+  ngram_range: [1, 2]
+
+training:
+  test_size: 0.2
+  models:
+    - logistic_regression
+    - linear_svm
+  mlflow_experiment: ticket-sentiment
+
+serving:
+  host: 0.0.0.0
+  port: 8000
+  model_path: models/best_model.joblib
+
+monitoring:
+  prediction_log: monitoring/logs/predictions.csv
+  drift_report: reports/drift_report.md
+  accuracy_retrain_threshold: 0.80
