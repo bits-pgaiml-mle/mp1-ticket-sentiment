@@ -7,6 +7,10 @@ Taxila-aligned end-to-end NLP pipeline (QuickBite + M2 ELS patterns adapted for 
 
 raw tickets → Pandera validation → shared features + SQLite feature store → MLflow experiments → FastAPI → prediction logs / concept-drift checks.
 
+## Process status
+
+See **[reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)** for progress. DVC dataset versioning is **done**; remaining Week-1 items are report/process (team names, spreadsheet, design note).
+
 ## Architecture (Taxila-style)
 
 ```text
@@ -45,7 +49,7 @@ mp1-ticket-sentiment/
 │   ├── prepare_dataset.py
 │   ├── generate_data.py
 │   ├── validate.py          # Pandera
-│   ├── external/kaggle/
+│   ├── external/kaggle/{amazon,yelp,sentiment140,support_tickets}/
 │   ├── feature_store.db     # generated
 │   └── feature_schema.json  # generated
 ├── features/
@@ -62,17 +66,28 @@ mp1-ticket-sentiment/
 ├── configs/
 │   ├── config.yaml
 │   └── data_source.yaml
-└── scripts/
-    ├── run_m2_pipeline.py   # Option A: Week 1 / M2
-    ├── run_train.py         # Option A: M2 + M3
-    └── run_pipeline.py      # alias for run_train.py
+├── scripts/
+│   ├── run_m2_pipeline.py   # Option A: Week 1 / M2
+│   ├── run_train.py         # Option A: M2 + M3
+│   ├── run_pipeline.py      # alias for run_train.py
+│   └── snapshot_datasets.py # DVC: all data-source snapshots
+├── dvc.yaml / dvc.lock
+├── docs/DVC.md
+└── USAGE.md
 ```
 
 ## Usage (local + Colab)
 
 Full instructions (Option A / Option B, local and Google Colab): **[USAGE.md](USAGE.md)**
 
-### Local — Option A (quick)
+There are **two execution paths**:
+
+| Path | When to use | Entry |
+|------|-------------|--------|
+| **Option A** | Fastest end-to-end run | `scripts/run_m2_pipeline.py` then `scripts/run_train.py` |
+| **Option B** | Step-by-step / debugging | prepare → validate → features → train → serve |
+
+### Local — Option A (quick, recommended)
 
 ```bash
 python scripts/run_m2_pipeline.py
@@ -82,7 +97,21 @@ python monitoring/simulate_concept_drift.py
 python monitoring/check_drift.py
 ```
 
-### Data source switch
+### Local — Option B (step by step)
+
+```bash
+python data/prepare_dataset.py --source support_tickets
+python data/validate.py
+python features/build_features.py
+python training/train.py
+uvicorn serving.api:app --reload --port 8000
+python monitoring/simulate_concept_drift.py
+python monitoring/check_drift.py
+```
+
+Swagger: http://127.0.0.1:8000/docs
+
+### Data source switch (before Option A or B)
 
 ```bash
 python data/prepare_dataset.py --source amazon
@@ -92,19 +121,9 @@ python data/prepare_dataset.py --source support_tickets   # default
 python data/prepare_dataset.py --source all
 ```
 
-### Local — Option B (step by step)
+(`--source synthetic` is an alias for `support_tickets`.) Drop-in layout: `data/external/kaggle/README.md`.
 
-```bash
-python data/prepare_dataset.py --source synthetic
-python data/validate.py
-python features/build_features.py
-python training/train.py
-uvicorn serving.api:app --reload --port 8000
-```
-
-Swagger: http://127.0.0.1:8000/docs
-
-### Colab (CPU)
+### Colab — Option A (easiest)
 
 ```python
 !git clone https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment.git
@@ -112,6 +131,15 @@ Swagger: http://127.0.0.1:8000/docs
 !pip install -q -r requirements.txt
 !python scripts/run_m2_pipeline.py
 !python scripts/run_train.py
+```
+
+### Colab — Option B (step by step)
+
+```python
+!python data/prepare_dataset.py --source support_tickets
+!python data/validate.py
+!python features/build_features.py
+!python training/train.py
 ```
 
 Use `fastapi.testclient.TestClient` for `/predict` on Colab (details in USAGE.md). T4 GPU is not required for the current classical ML baseline.
@@ -133,14 +161,7 @@ git tag week1-data-v1
 3. **Offline SQLite feature store** for cleaned text + numeric/channel features (Taxila M2 pattern).
 4. **Pandera** for schema + statistical validation before features.
 5. **Three MLflow runs** compared; best macro-F1 promoted to `model_store/sentiment_model.joblib`.
-
-## Process updates
-
-See [`reports/PROCESS_UPDATES.md`](reports/PROCESS_UPDATES.md) for:
-
-- progress completed till now
-- M1 foundation checklist
-- pending items to close **Week 1 / M2** (and M1 polish)
+6. **Multi-source ingest**: Amazon, Yelp, Sentiment140, support tickets, or all — via `configs/data_source.yaml`.
 
 ## Team
 
