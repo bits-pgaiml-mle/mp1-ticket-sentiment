@@ -9,20 +9,38 @@
 | `data/versions/sentiment140/` | Twitter Sentiment140 → tickets |
 | `data/versions/support_tickets/` | Support-ticket / synthetic tickets |
 | `data/versions/all/` | Mix of all four |
-| `data/raw/tickets.csv` | Active dataset (from config) |
+| `data/raw/tickets.csv` | Active dataset (from `configs/data_source.yaml`) |
 
-## Commands
+Tracked via `dvc.yaml` stage `snapshot_datasets` (see `dvc.lock`).
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+dvc pull   # if local remote has been pushed; otherwise regenerate below
+```
+
+## Regenerate and version all sources
 
 ```bash
 dvc repro
-git add dvc.yaml dvc.lock .dvc .gitignore
+# or: python scripts/snapshot_datasets.py
+git add dvc.yaml dvc.lock .dvc .gitignore data/.gitignore
 git commit -m "Update DVC dataset snapshots"
 git tag -f week1-data-v1
 ```
 
-Optional local remote:
+## Switch active source without full repro
+
+```bash
+python data/prepare_dataset.py --source yelp
+```
+
+## Local remote (optional)
 
 ```bash
 dvc remote add -d localremote ./dvc-storage
 dvc push
 ```
+
+`dvc-storage/` is gitignored; teammates without the remote can run `dvc repro`.

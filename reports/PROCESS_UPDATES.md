@@ -27,14 +27,14 @@
 - [x] GitHub org created: `bits-pgaiml-mle`
 - [x] Flavor C repo created and cloned locally
 - [x] Local Git identity set to WILP email for commits
-- [x] Scaffold merged to `main`, then Taxila-aligned refactor merged (`feature/taxila-align-flavor-c`)
+- [x] Scaffold, Taxila align, multi-source data, and DVC PRs merged to `main`
 
 ### M1 — foundations (aligned with Taxila ELS Week 1 ideas)
 
 | Item | Status | Evidence |
 |------|--------|----------|
 | Isolated project layout | Done | `data/`, `features/`, `training/`, `serving/`, `monitoring/`, `model_store/` |
-| Dependency list / reproducible install | Done | `requirements.txt`, README setup |
+| Dependency list / reproducible install | Done | `requirements.txt`, README + USAGE setup |
 | Model persistence concept | Done | `model_store/sentiment_model.joblib` |
 | Feature schema / contract | Done | `data/feature_schema.json` |
 | Basic REST service shape | Done | `serving/api.py` (`/health`, `/predict`) |
@@ -44,12 +44,13 @@
 
 | Item | Status | Evidence |
 |------|--------|----------|
-| Raw text ingest (synthetic tickets) | Done | `data/generate_data.py` → `data/raw/tickets.csv` |
+| Multi-source prepare | Done | `amazon` / `yelp` / `sentiment140` / `support_tickets` / `all` |
+| Raw text ingest | Done | `data/prepare_dataset.py` (+ `generate_data.py` for ticket templates) |
 | Schema + statistical validation | Done | `data/validate.py` (Pandera) |
 | Clean / tokenize-style text prep | Done | `features/text_utils.py` (`clean_text`) |
 | Feature pipeline + offline store | Done | `features/build_features.py` + SQLite `data/feature_store.db` |
 | Shared train/serve feature logic | Done | same `text_utils` used by features + API |
-| One-command Week-1-oriented run | Done | `scripts/run_pipeline.py` (also trains; M2 portion is generate→validate→features) |
+| Option A / Option B runners | Done | `scripts/run_m2_pipeline.py`, `scripts/run_train.py` (`run_pipeline.py` alias) |
 | Dataset versioning (DVC / tagged data snapshot) | **Done** | `dvc.yaml` snapshots all sources; tag `week1-data-v1` |
 | Week-1 notes in formal report | **Pending** | Decisions, schema, feature list |
 
@@ -65,29 +66,20 @@
 
 ---
 
-## Pending for Week 1 / M1 (action list)
+## Pending for Week 1 (process / report — code done)
 
-### Must-finish for Mini-project Week 1 (M2)
-
-1. **Dataset versioning**
-   - Init DVC (or equivalent) and track `data/raw/tickets.csv` + feature-store snapshot  
-   - Create Git tag e.g. `week1-data-v1`
-2. **Week-1 validation evidence**
+1. **Week-1 validation evidence**
    - Capture sample `python data/validate.py` output (screenshot or log) into `reports/`
-3. **Week-1 design write-up** (short section in formal report)
-   - Why synthetic tickets  
-   - Schema/statistical checks chosen  
-   - Feature list and SQLite store rationale  
+2. **Week-1 design write-up** (short section in formal report)
+   - Why support tickets + optional Amazon/Yelp/Sentiment140 sources
+   - Schema/statistical checks chosen
+   - Feature list and SQLite store rationale
    - Shared `clean_text` to avoid train–serve skew
-4. **Confirm Flavor C** on group registration spreadsheet (process)
-
-### Remaining M1 foundation polish
-
-1. Add a short **“M1 gaps addressed”** note (what Taxila fragile-service lab warned about, and how this repo avoids it: validation gate, shared features, logged predictions).
-2. Ensure every teammate can:
-   - clone repo  
-   - create venv  
-   - run `python data/generate_data.py && python data/validate.py && python features/build_features.py`
+   - DVC multi-source snapshots (`docs/DVC.md`)
+3. **Confirm Flavor C** on group registration spreadsheet if C is the submission choice
+4. **Remaining M1 polish**
+   - Short “M1 gaps addressed” note in the formal report
+   - Peer run-through: clone → venv → Option A (`scripts/run_m2_pipeline.py`)
 
 ### Explicitly not required to close Week 1 / M1
 
@@ -102,13 +94,13 @@
 
 | Owner | Task |
 |-------|------|
-| TBD | DVC init + `week1-data-v1` tag |
 | TBD | Validation log / screenshots into `reports/` |
 | TBD | Week-1 + M1 write-up draft |
 | TBD | Peer run-through of setup on a clean machine |
+| TBD | README Team names/roles |
 
 ---
 
 ## Next checkpoint
 
-After Week 1 close-out: freeze data version, then treat MLflow comparison evidence as **Week 2 / M3** official deliverable (already runnable via `python training/train.py`).
+Week-1 code (ingest/validate/features/DVC) is frozen via `week1-data-v1`. Treat MLflow comparison evidence as **Week 2 / M3** official deliverable (already runnable via `python training/train.py` or Option A `scripts/run_train.py`).

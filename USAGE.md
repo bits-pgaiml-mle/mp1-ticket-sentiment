@@ -27,6 +27,13 @@ pip install -r requirements.txt
 
 Run all commands from the **repo root**.
 
+### Execution options
+
+| Path | Best for | Commands |
+|------|----------|----------|
+| **Option A** | Quick full run | `python scripts/run_m2_pipeline.py` then `python scripts/run_train.py` |
+| **Option B** | Learn / debug each stage | prepare → validate → features → train → serve → drift |
+
 ### 1.1b Data source: amazon / yelp / sentiment140 / support_tickets / all
 
 ```powershell
@@ -37,7 +44,7 @@ python data/prepare_dataset.py --source support_tickets
 python data/prepare_dataset.py --source all
 ```
 
-Or set `configs/data_source.yaml`. Drop CSVs under `data/external/kaggle/{amazon,yelp,sentiment140,support_tickets}/` — see that folder’s README. `run_m2_pipeline.py` calls `prepare_dataset.py`.
+Or set `configs/data_source.yaml` (default: `support_tickets`). Drop CSVs under `data/external/kaggle/{amazon,yelp,sentiment140,support_tickets}/` — see that folder’s README. Option A’s `run_m2_pipeline.py` calls `prepare_dataset.py`. `--source synthetic` aliases to `support_tickets`.
 
 ### 1.2 Option A — easiest (recommended)
 
@@ -68,7 +75,7 @@ python monitoring/check_drift.py
 ### 1.3 Option B — step by step
 
 ```powershell
-python data/prepare_dataset.py --source synthetic
+python data/prepare_dataset.py --source support_tickets
 python data/validate.py
 python features/build_features.py
 python training/train.py
@@ -135,7 +142,7 @@ Drift:
 ### 2.3 Option B — step by step on Colab
 
 ```python
-!python data/generate_data.py
+!python data/prepare_dataset.py --source support_tickets
 !python data/validate.py
 !python features/build_features.py
 !python training/train.py
@@ -153,7 +160,7 @@ Possible with background + ngrok; **not required**. Prefer TestClient for demos.
 
 | Stage | Option A | Option B |
 |-------|----------|----------|
-| M2 data | `scripts/run_m2_pipeline.py` | generate → validate → features |
+| M2 data | `scripts/run_m2_pipeline.py` | prepare → validate → features |
 | M3 train | `scripts/run_train.py` (includes M2) | `training/train.py` |
 | M4 serve | uvicorn / TestClient | same |
 | M5 drift | simulate + check_drift | same |
