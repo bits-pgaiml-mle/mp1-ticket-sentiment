@@ -10,7 +10,7 @@ raw tickets → Pandera validation → shared features + SQLite feature store �
 ## Architecture (Taxila-style)
 
 ```text
-data/prepare_dataset.py       (--source synthetic | kaggle | both)
+data/prepare_dataset.py       (--source amazon | yelp | sentiment140 | support_tickets | all)
         |
         v
 data/raw/tickets.csv          (immutable raw)
@@ -85,9 +85,11 @@ python monitoring/check_drift.py
 ### Data source switch
 
 ```bash
-python data/prepare_dataset.py --source synthetic   # default
-python data/prepare_dataset.py --source kaggle
-python data/prepare_dataset.py --source both
+python data/prepare_dataset.py --source amazon
+python data/prepare_dataset.py --source yelp
+python data/prepare_dataset.py --source sentiment140
+python data/prepare_dataset.py --source support_tickets   # default
+python data/prepare_dataset.py --source all
 ```
 
 ### Local — Option B (step by step)

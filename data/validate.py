@@ -27,7 +27,9 @@ SCHEMA = pa.DataFrameSchema(
         ),
         "data_source": pa.Column(
             str,
-            checks=pa.Check.isin(["synthetic", "kaggle"]),
+            checks=pa.Check.isin(
+                ["amazon", "yelp", "sentiment140", "support_tickets", "synthetic", "kaggle"]
+            ),
             required=False,
             nullable=True,
         ),
@@ -59,7 +61,7 @@ def main() -> None:
     path = ROOT / cfg["data"]["raw_path"]
     if not path.exists():
         print(f"Raw data not found: {path}")
-        print("Run: python data/prepare_dataset.py [--source synthetic|kaggle|both]")
+        print("Run: python data/prepare_dataset.py [--source amazon|yelp|sentiment140|support_tickets|all]")
         sys.exit(1)
 
     df = pd.read_csv(path)

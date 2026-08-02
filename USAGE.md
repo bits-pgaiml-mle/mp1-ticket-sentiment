@@ -27,15 +27,17 @@ pip install -r requirements.txt
 
 Run all commands from the **repo root**.
 
-### 1.1b Data source: synthetic / Kaggle / both
+### 1.1b Data source: amazon / yelp / sentiment140 / support_tickets / all
 
 ```powershell
-python data/prepare_dataset.py --source synthetic
-python data/prepare_dataset.py --source kaggle
-python data/prepare_dataset.py --source both
+python data/prepare_dataset.py --source amazon
+python data/prepare_dataset.py --source yelp
+python data/prepare_dataset.py --source sentiment140
+python data/prepare_dataset.py --source support_tickets
+python data/prepare_dataset.py --source all
 ```
 
-Or set `configs/data_source.yaml`. Drop a reviews CSV at `data/external/kaggle/reviews_sample.csv` — see that folder’s README. `run_m2_pipeline.py` calls `prepare_dataset.py`.
+Or set `configs/data_source.yaml`. Drop CSVs under `data/external/kaggle/{amazon,yelp,sentiment140,support_tickets}/` — see that folder’s README. `run_m2_pipeline.py` calls `prepare_dataset.py`.
 
 ### 1.2 Option A — easiest (recommended)
 
@@ -77,7 +79,7 @@ python monitoring/check_drift.py
 
 | Step | Entry file |
 |------|------------|
-| Prepare tickets | `data/prepare_dataset.py` (`--source synthetic\|kaggle\|both`) |
+| Prepare tickets | `data/prepare_dataset.py` (`--source amazon\|yelp\|sentiment140\|support_tickets\|all`) |
 | Validate | `data/validate.py` |
 | Features | `features/build_features.py` |
 | Train | `training/train.py` |

@@ -1,15 +1,44 @@
-data_source: synthetic
+data_source: support_tickets
 
-kaggle:
-  local_csv: data/external/kaggle/reviews_sample.csv
+amazon:
+  kaggle_hint: Amazon product reviews (stars -> sentiment)
+  local_csv: data/external/kaggle/amazon/reviews.csv
+  text_col: reviewText
+  label_col: overall
+  max_rows: 3000
+  channel: app
+
+yelp:
+  kaggle_hint: Yelp reviews (stars -> sentiment)
+  local_csv: data/external/kaggle/yelp/reviews.csv
+  text_col: text
+  label_col: stars
+  max_rows: 3000
+  channel: app
+
+sentiment140:
+  kaggle_ref: kazanova/sentiment140
+  local_csv: data/external/kaggle/sentiment140/tweets.csv
+  text_col: text
+  label_col: target
+  max_rows: 3000
+  channel: chat
+  has_header: false
+  column_names: [target, id, date, flag, user, text]
+
+support_tickets:
+  kaggle_hint: Customer support / ticket intent datasets (or use built-in synthetic tickets)
+  local_csv: data/external/kaggle/support_tickets/tickets.csv
   text_col: text
   label_col: label
-  max_rows: 5000
-
-synthetic:
-  n_rows: 1500
+  max_rows: 3000
+  channel: email
+  use_synthetic_if_missing: true
+  synthetic_rows: 1500
   seed: 42
 
-both:
-  synthetic_rows: 800
-  kaggle_rows: 2000
+all:
+  amazon_rows: 800
+  yelp_rows: 800
+  sentiment140_rows: 800
+  support_ticket_rows: 800

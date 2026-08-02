@@ -1,24 +1,36 @@
-# External / Kaggle data drop zone (Flavor C)
+# External data drop zone (Flavor C)
 
 ## Modes (`configs/data_source.yaml` or `--source`)
 
-| Mode | What it does |
-|------|----------------|
-| `synthetic` | Generated support tickets only (default) |
-| `kaggle` | Adapt a reviews CSV into ticket schema |
-| `both` | Concatenate synthetic tickets + Kaggle-adapted reviews |
+| Mode | Dataset |
+|------|---------|
+| `amazon` | Amazon product reviews (stars → sentiment) |
+| `yelp` | Yelp reviews (stars → sentiment) |
+| `sentiment140` | [Twitter Sentiment140](https://www.kaggle.com/datasets/kazanova/sentiment140) (0/2/4 → neg/neu/pos) |
+| `support_tickets` | Support-ticket / intent-style text (uses built-in synthetic tickets if CSV missing) |
+| `all` | Concatenate all four |
 
-## How to use real Kaggle data
+Aliases: `synthetic`/`support` → `support_tickets`, `twitter` → `sentiment140`, `both` → `all`.
 
-1. Export a CSV from Amazon reviews, Yelp, Sentiment140, etc. with a text column and a rating/label column.
-2. Save as `data/external/kaggle/reviews_sample.csv` (or set `kaggle.local_csv` in config).
-3. Map columns in `configs/data_source.yaml` if needed (`text_col`, `label_col`).
-4. Run:
+## Drop-in paths
+
+| Source | Default path | Typical columns |
+|--------|--------------|-----------------|
+| Amazon | `data/external/kaggle/amazon/reviews.csv` | `reviewText`, `overall` |
+| Yelp | `data/external/kaggle/yelp/reviews.csv` | `text`, `stars` |
+| Sentiment140 | `data/external/kaggle/sentiment140/tweets.csv` | no header: target,id,date,flag,user,text |
+| Support tickets | `data/external/kaggle/support_tickets/tickets.csv` | `text`, `label` |
+
+Column names are configurable under each section in `configs/data_source.yaml`.
+
+## Commands
 
 ```bash
-python data/prepare_dataset.py --source kaggle
-python data/prepare_dataset.py --source both
+python data/prepare_dataset.py --source amazon
+python data/prepare_dataset.py --source yelp
+python data/prepare_dataset.py --source sentiment140
+python data/prepare_dataset.py --source support_tickets
+python data/prepare_dataset.py --source all
 ```
 
-Star ratings are mapped: ≤2 → negative, 3 → neutral, ≥4 → positive.
-If the CSV is missing, a tiny demo file is created so the pipeline still runs.
+Demo CSVs are auto-created when files are missing so the pipeline still runs end-to-end.
