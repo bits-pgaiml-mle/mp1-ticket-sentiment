@@ -256,3 +256,8 @@ data/external/kaggle/**/*.png
 data/external/kaggle/**/*.jpg
 data/external/kaggle/**/*.jpeg
 data/external/kaggle/casting/
+
+# DVC local remote / storage
+/dvc-storage/
+/data/versions/
+

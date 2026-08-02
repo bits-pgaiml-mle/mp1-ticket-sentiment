@@ -1,0 +1,13 @@
+stages:
+  snapshot_datasets:
+    cmd: python scripts/snapshot_datasets.py
+    deps:
+      - scripts/snapshot_datasets.py
+      - data/prepare_dataset.py
+      - data/generate_data.py
+      - configs/data_source.yaml
+    outs:
+      - data/versions:
+          persist: true
+      - data/raw/tickets.csv:
+          persist: true
