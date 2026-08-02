@@ -50,7 +50,7 @@
 | Feature pipeline + offline store | Done | `features/build_features.py` + SQLite `data/feature_store.db` |
 | Shared train/serve feature logic | Done | same `text_utils` used by features + API |
 | One-command Week-1-oriented run | Done | `scripts/run_pipeline.py` (also trains; M2 portion is generate→validate→features) |
-| Dataset versioning (DVC / tagged data snapshot) | **Pending** | Required by brief / instructor “versioned dataset” |
+| Dataset versioning (DVC / tagged data snapshot) | **Done** | `dvc.yaml` snapshots all sources; tag `week1-data-v1` |
 | Week-1 notes in formal report | **Pending** | Decisions, schema, feature list |
 
 ### Ahead of Week 1 (already started — OK per instructor “progress as modules unfold”)

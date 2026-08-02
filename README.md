@@ -116,6 +116,16 @@ Swagger: http://127.0.0.1:8000/docs
 
 Use `fastapi.testclient.TestClient` for `/predict` on Colab (details in USAGE.md). T4 GPU is not required for the current classical ML baseline.
 
+## Dataset versioning (DVC)
+
+All modes (`amazon`, `yelp`, `sentiment140`, `support_tickets`, `all`) are snapshotted under `data/versions/` and tracked with DVC. Details: **[docs/DVC.md](docs/DVC.md)**.
+
+```bash
+dvc repro
+dvc push
+git tag week1-data-v1
+```
+
 ## Design decisions (for report)
 
 1. **Shared feature logic** in `features/text_utils.py` used by feature build and API (avoids training-serving skew).

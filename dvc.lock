@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  snapshot_datasets:
+    cmd: python scripts/snapshot_datasets.py
+    deps:
+    - path: configs/data_source.yaml
+      hash: md5
+      md5: f3522e24d45f54ec7268d3f4daf1311e
+      size: 1101
+    - path: data/generate_data.py
+      hash: md5
+      md5: 410f4412703a904629d9d01f97c0bd2d
+      size: 2993
+    - path: data/prepare_dataset.py
+      hash: md5
+      md5: 4c4eaabbd282c63c9812c92b826da758
+      size: 9477
+    - path: scripts/snapshot_datasets.py
+      hash: md5
+      md5: 48b18926d8dda59105733f94e6988c17
+      size: 1411
+    outs:
+    - path: data/raw/tickets.csv
+      hash: md5
+      md5: 8e81b25d2dd35b70377d797ec5be6d4e
+      size: 145762
+    - path: data/versions
+      hash: md5
+      md5: fa6d255dc1c1871c0c291f62c114fda2.dir
+      size: 224671
+      nfiles: 5
