@@ -61,18 +61,11 @@ mp1-ticket-sentiment/
     └── run_pipeline.py      # alias for run_train.py
 ```
 
-## Setup
+## Usage (local + Colab)
 
-```bash
-cd mp1-ticket-sentiment
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
+Full instructions (Option A / Option B, local and Google Colab): **[USAGE.md](USAGE.md)**
 
-## Run (same approach as Flavor A)
-
-### Option A — easiest (recommended)
+### Local — Option A (quick)
 
 ```bash
 python scripts/run_m2_pipeline.py
@@ -82,9 +75,7 @@ python monitoring/simulate_concept_drift.py
 python monitoring/check_drift.py
 ```
 
-`scripts/run_pipeline.py` is kept as an alias for `scripts/run_train.py`.
-
-### Option B — step by step
+### Local — Option B (step by step)
 
 ```bash
 python data/generate_data.py
@@ -94,26 +85,19 @@ python training/train.py
 uvicorn serving.api:app --reload --port 8000
 ```
 
-Sample predict:
+Swagger: http://127.0.0.1:8000/docs
 
-```bash
-curl -X POST http://127.0.0.1:8000/predict ^
-  -H "Content-Type: application/json" ^
-  -d "{\"text\":\"Support resolved my issue quickly, thank you!\",\"channel\":\"chat\"}"
+### Colab (CPU)
+
+```python
+!git clone https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment.git
+%cd mp1-ticket-sentiment
+!pip install -q -r requirements.txt
+!python scripts/run_m2_pipeline.py
+!python scripts/run_train.py
 ```
 
-Drift simulation:
-
-```bash
-python monitoring/simulate_concept_drift.py
-python monitoring/check_drift.py
-```
-
-MLflow UI:
-
-```bash
-mlflow ui
-```
+Use `fastapi.testclient.TestClient` for `/predict` on Colab (details in USAGE.md). T4 GPU is not required for the current classical ML baseline.
 
 ## Design decisions (for report)
 
