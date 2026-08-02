@@ -3,37 +3,59 @@
 **BITS Pilani WILP · PGAIML · PCAM ZC412 Machine Learning Engineering**  
 **Mini-Project-1 · Flavor C — Support Ticket / Review Sentiment Classifier**
 
-End-to-end NLP ML pipeline: raw text ingest → cleaning & features → tracked experiments → REST API → monitoring / concept drift / retraining design.
+Taxila-aligned end-to-end NLP pipeline (QuickBite + M2 ELS patterns adapted for text):
 
-## Architecture
+raw tickets → Pandera validation → shared features + SQLite feature store → MLflow experiments → FastAPI → prediction logs / concept-drift checks.
+
+## Architecture (Taxila-style)
 
 ```text
-raw tickets.csv
-      |
-      v
-  validate  ----->  clean + features  ----->  tickets_features.csv (DVC)
-                         |
-                         v
-                   train + MLflow  ----->  models/best_model.joblib
-                         |
-                         v
-                      FastAPI  ----->  POST /predict (text)
-                         |
-                         v
-                    monitoring  ----->  logs + drift report + retrain trigger
+data/raw/tickets.csv          (immutable raw)
+        |
+        v
+data/validate.py              (Pandera schema + statistical checks)
+        |
+        v
+features/build_features.py    (shared clean_text + channel flags)
+        |
+        +--> data/feature_store.db      (offline feature store)
+        +--> data/feature_schema.json   (feature contract)
+        |
+        v
+training/train.py             (MLflow: LogReg C=1/C=10 + LinearSVC)
+        |
+        +--> model_store/sentiment_model.joblib
+        |
+        v
+serving/api.py                (FastAPI + Pydantic + prediction logging)
+        |
+        v
+monitoring/check_drift.py     (shift checks + retrain trigger notes)
 ```
 
 ## Repository layout
 
 ```text
 mp1-ticket-sentiment/
+├── data/
+│   ├── raw/                 # immutable raw tickets
+│   ├── generate_data.py
+│   ├── validate.py          # Pandera
+│   ├── feature_store.db     # generated
+│   └── feature_schema.json  # generated
+├── features/
+│   ├── text_utils.py        # shared train/serve cleaning
+│   └── build_features.py
+├── training/train.py
+├── serving/api.py
+├── monitoring/
+│   ├── logger.py
+│   ├── check_drift.py
+│   └── simulate_concept_drift.py
+├── model_store/
+├── reports/
 ├── configs/config.yaml
-├── data/raw|processed/
-├── src/data|features|training|serving|monitoring/
-├── models/  monitoring/logs/  notebooks/  reports/
-├── docker/Dockerfile
-├── scripts/run_week1.py
-└── requirements.txt
+└── scripts/run_pipeline.py
 ```
 
 ## Setup
@@ -45,26 +67,52 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-## Week 1 — data pipeline (ready)
+## Run (aligned with Taxila tutorial flow)
 
 ```bash
-python scripts/run_week1.py
+python scripts/run_pipeline.py
 ```
 
-## Later weeks (stubs)
+Or step by step:
 
-| Week | Module | Focus |
-|------|--------|-------|
-| 2 | M3 | Classical ML (+ optional transformer) + MLflow |
-| 3 | M4 | FastAPI text inference + empty/malformed handling |
-| 4 | M5 | Concept drift (new slang/topics) + retrain trigger |
+```bash
+python data/generate_data.py
+python data/validate.py
+python features/build_features.py
+python training/train.py
+uvicorn serving.api:app --reload --port 8000
+```
 
-## Dataset
+Sample predict:
 
-Starter generates **synthetic support tickets** labeled `negative` / `neutral` / `positive`.  
-Optional upgrade: Amazon/Yelp reviews or Sentiment140.
+```bash
+curl -X POST http://127.0.0.1:8000/predict ^
+  -H "Content-Type: application/json" ^
+  -d "{\"text\":\"Support resolved my issue quickly, thank you!\",\"channel\":\"chat\"}"
+```
+
+Drift simulation:
+
+```bash
+python monitoring/simulate_concept_drift.py
+python monitoring/check_drift.py
+```
+
+MLflow UI:
+
+```bash
+mlflow ui
+```
+
+## Design decisions (for report)
+
+1. **Shared feature logic** in `features/text_utils.py` used by feature build and API (avoids training-serving skew).
+2. **TF-IDF fit on train split only** inside `training/train.py` (leakage-safe, M2 classroom lesson).
+3. **Offline SQLite feature store** for cleaned text + numeric/channel features (Taxila M2 pattern).
+4. **Pandera** for schema + statistical validation before features.
+5. **Three MLflow runs** compared; best macro-F1 promoted to `model_store/sentiment_model.joblib`.
 
 ## Team
 
-- Org: [bits-pgaiml-mle](https://github.com/bits-pgaiml-mle)
-- Repo: [mp1-ticket-sentiment](https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment)
+- Org: https://github.com/bits-pgaiml-mle
+- Repo: https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment

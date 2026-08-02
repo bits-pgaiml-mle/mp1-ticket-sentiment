@@ -10,28 +10,29 @@ project:
 
 data:
   raw_path: data/raw/tickets.csv
-  processed_path: data/processed/tickets_features.csv
+  feature_store: data/feature_store.db
+  feature_table: ticket_features
+  feature_schema: data/feature_schema.json
   sample_size: 1500
   random_seed: 42
 
 features:
-  vectorizer: tfidf
-  max_features: 5000
+  max_features: 3000
   ngram_range: [1, 2]
+  min_df: 2
 
 training:
   test_size: 0.2
-  models:
-    - logistic_regression
-    - linear_svm
-  mlflow_experiment: ticket-sentiment
+  mlflow_experiment: ticket_sentiment_prediction
+  model_path: model_store/sentiment_model.joblib
+  vectorizer_path: model_store/tfidf_vectorizer.joblib
+  label_encoder_path: model_store/label_encoder.joblib
 
 serving:
   host: 0.0.0.0
   port: 8000
-  model_path: models/best_model.joblib
+  model_version: ticket-sentiment-v1
 
 monitoring:
-  prediction_log: monitoring/logs/predictions.csv
-  drift_report: reports/drift_report.md
-  accuracy_retrain_threshold: 0.80
+  predictions_db: monitoring/predictions.db
+  drift_shift_threshold: 0.8
