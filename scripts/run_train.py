@@ -13,8 +13,13 @@ def run(args: list[str]) -> None:
 
 
 def main() -> None:
-    run(["scripts/run_train.py"])
-    print("\nFull pipeline alias complete (same as scripts/run_train.py).")
+    run(["scripts/run_m2_pipeline.py"])
+    run(["training/train.py"])
+    print("\nM2+M3 complete. Start API with:")
+    print("  uvicorn serving.api:app --reload --port 8000")
+    print("Then:")
+    print("  python monitoring/simulate_concept_drift.py")
+    print("  python monitoring/check_drift.py")
 
 
 if __name__ == "__main__":
