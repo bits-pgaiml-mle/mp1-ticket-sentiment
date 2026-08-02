@@ -27,6 +27,18 @@ pip install -r requirements.txt
 
 Run all commands from the **repo root**.
 
+### 1.1b Data source: amazon / yelp / sentiment140 / support_tickets / all
+
+```powershell
+python data/prepare_dataset.py --source amazon
+python data/prepare_dataset.py --source yelp
+python data/prepare_dataset.py --source sentiment140
+python data/prepare_dataset.py --source support_tickets
+python data/prepare_dataset.py --source all
+```
+
+Or set `configs/data_source.yaml`. Drop CSVs under `data/external/kaggle/{amazon,yelp,sentiment140,support_tickets}/` — see that folder’s README. `run_m2_pipeline.py` calls `prepare_dataset.py`.
+
 ### 1.2 Option A — easiest (recommended)
 
 ```powershell
@@ -56,7 +68,7 @@ python monitoring/check_drift.py
 ### 1.3 Option B — step by step
 
 ```powershell
-python data/generate_data.py
+python data/prepare_dataset.py --source synthetic
 python data/validate.py
 python features/build_features.py
 python training/train.py
@@ -67,7 +79,7 @@ python monitoring/check_drift.py
 
 | Step | Entry file |
 |------|------------|
-| Generate tickets | `data/generate_data.py` |
+| Prepare tickets | `data/prepare_dataset.py` (`--source amazon\|yelp\|sentiment140\|support_tickets\|all`) |
 | Validate | `data/validate.py` |
 | Features | `features/build_features.py` |
 | Train | `training/train.py` |

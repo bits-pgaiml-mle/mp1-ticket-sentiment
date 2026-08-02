@@ -10,6 +10,9 @@ raw tickets → Pandera validation → shared features + SQLite feature store �
 ## Architecture (Taxila-style)
 
 ```text
+data/prepare_dataset.py       (--source amazon | yelp | sentiment140 | support_tickets | all)
+        |
+        v
 data/raw/tickets.csv          (immutable raw)
         |
         v
@@ -39,8 +42,10 @@ monitoring/check_drift.py     (shift checks + retrain trigger notes)
 mp1-ticket-sentiment/
 ├── data/
 │   ├── raw/                 # immutable raw tickets
+│   ├── prepare_dataset.py
 │   ├── generate_data.py
 │   ├── validate.py          # Pandera
+│   ├── external/kaggle/
 │   ├── feature_store.db     # generated
 │   └── feature_schema.json  # generated
 ├── features/
@@ -54,7 +59,9 @@ mp1-ticket-sentiment/
 │   └── simulate_concept_drift.py
 ├── model_store/
 ├── reports/
-├── configs/config.yaml
+├── configs/
+│   ├── config.yaml
+│   └── data_source.yaml
 └── scripts/
     ├── run_m2_pipeline.py   # Option A: Week 1 / M2
     ├── run_train.py         # Option A: M2 + M3
@@ -75,10 +82,20 @@ python monitoring/simulate_concept_drift.py
 python monitoring/check_drift.py
 ```
 
+### Data source switch
+
+```bash
+python data/prepare_dataset.py --source amazon
+python data/prepare_dataset.py --source yelp
+python data/prepare_dataset.py --source sentiment140
+python data/prepare_dataset.py --source support_tickets   # default
+python data/prepare_dataset.py --source all
+```
+
 ### Local — Option B (step by step)
 
 ```bash
-python data/generate_data.py
+python data/prepare_dataset.py --source synthetic
 python data/validate.py
 python features/build_features.py
 python training/train.py
