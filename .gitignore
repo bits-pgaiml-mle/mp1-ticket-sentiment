@@ -226,6 +226,7 @@ models/*.pkl
 !models/.gitkeep
 monitoring/logs/*.csv
 !monitoring/logs/.gitkeep
+mlflow.db
 mlruns/
 mlartifacts/
 .dvc/cache/
@@ -246,6 +247,7 @@ model_store/*.json
 !model_store/*_decision.json
 monitoring/predictions.db
 monitoring/logs/*.csv
+mlflow.db
 mlruns/
 mlartifacts/
 .DS_Store
