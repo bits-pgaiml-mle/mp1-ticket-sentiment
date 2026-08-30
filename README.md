@@ -13,6 +13,8 @@ See **[reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)**. Code/evidence 
 
 ## Architecture (Taxila / Teams-style)
 
+Full write-up: **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** (context, batch pipeline, Lab4 serve, drift, Compose, artifacts).
+
 ```text
 data/prepare_dataset.py
         |

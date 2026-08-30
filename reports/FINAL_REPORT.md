@@ -30,6 +30,8 @@ A customer-support / e-commerce platform needs to classify incoming ticket text 
 
 ## 2. Architecture
 
+Canonical document: **[docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)**.
+
 ```text
 prepare_dataset → raw tickets → validation/validate_data.py (Pandera)
         → features/build_features.py (shared build_feature_row)
