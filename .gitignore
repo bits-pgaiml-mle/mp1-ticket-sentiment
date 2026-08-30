@@ -245,6 +245,7 @@ model_store/*.pkl
 model_store/*.json
 !model_store/.gitkeep
 !model_store/*_decision.json
+!model_store/feature_columns.json
 monitoring/predictions.db
 monitoring/logs/*.csv
 mlflow.db
@@ -263,4 +264,8 @@ data/external/kaggle/casting/
 # DVC local remote / storage
 /dvc-storage/
 /data/versions/
+
+# Offline feature store (Teams lab path)
+feature_store/*.db
+!feature_store/.gitkeep
 

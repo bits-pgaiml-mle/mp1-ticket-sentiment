@@ -14,7 +14,7 @@ def run(args: list[str]) -> None:
 
 def main() -> None:
     run(["data/prepare_dataset.py"])
-    run(["data/validate.py"])
+    run(["validation/validate_data.py"])
     run(["features/build_features.py"])
     print("\nM2 pipeline complete (prepare -> validate -> feature store).")
 

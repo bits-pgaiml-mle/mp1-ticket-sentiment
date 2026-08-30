@@ -1,0 +1,80 @@
+services:
+  mlflow:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: mp1-ticket-sentiment:1.0.0
+    container_name: mp1c_mlflow
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////mlflow/mlflow.db
+      --default-artifact-root /mlflow/artifacts
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_data:/mlflow
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  trainer:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: mp1-ticket-sentiment:1.0.0
+    container_name: mp1c_trainer
+    command: python scripts/run_train.py
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+    volumes:
+      - ./data:/app/data
+      - ./configs:/app/configs
+      - model_store:/app/model_store
+      - feature_store:/app/feature_store
+    depends_on:
+      mlflow:
+        condition: service_healthy
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: mp1-ticket-sentiment:1.0.0
+    container_name: mp1c_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - model_store:/app/model_store
+      - feature_store:/app/feature_store
+      - ./monitoring:/app/monitoring
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  monitor:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: mp1-ticket-sentiment:1.0.0
+    container_name: mp1c_monitor
+    command: python monitoring/check_drift.py
+    volumes:
+      - model_store:/app/model_store:ro
+      - feature_store:/app/feature_store:ro
+      - ./monitoring:/app/monitoring
+    depends_on:
+      - api
+
+volumes:
+  mlflow_data:
+  model_store:
+  feature_store:

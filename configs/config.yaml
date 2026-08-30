@@ -10,9 +10,9 @@ project:
 
 data:
   raw_path: data/raw/tickets.csv
-  feature_store: data/feature_store.db
+  feature_store: feature_store/feature_store.db
   feature_table: ticket_features
-  feature_schema: data/feature_schema.json
+  feature_schema: model_store/feature_columns.json
   sample_size: 1500
   random_seed: 42
 
@@ -36,3 +36,4 @@ serving:
 monitoring:
   predictions_db: monitoring/predictions.db
   drift_shift_threshold: 0.8
+  psi_alert: 0.25

@@ -19,17 +19,25 @@ def load_config() -> dict:
         return yaml.safe_load(f)
 
 
+def build_feature_row(text: str, channel: str) -> tuple[pd.DataFrame, dict]:
+    text_clean = clean_text(text)
+    flags = channel_flags(channel)
+    features = {
+        "text_clean": text_clean,
+        "text_len": len(text_clean),
+        "word_count": len(text_clean.split()) if text_clean else 0,
+        **flags,
+    }
+    return pd.DataFrame([features]), features
+
+
 def transform_frame(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for _, row in df.iterrows():
-        text_clean = clean_text(row["text"])
-        flags = channel_flags(row["channel"])
+        _, features = build_feature_row(str(row["text"]), str(row["channel"]))
         item = {
             "ticket_id": row["ticket_id"],
-            "text_clean": text_clean,
-            "text_len": len(text_clean),
-            "word_count": len(text_clean.split()) if text_clean else 0,
-            **flags,
+            **features,
             "label": row["label"],
         }
         rows.append(item)
@@ -47,6 +55,7 @@ def main() -> None:
     feature_df = transform_frame(df)
 
     store_path.parent.mkdir(parents=True, exist_ok=True)
+    schema_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(store_path)
     feature_df.to_sql(table, conn, if_exists="replace", index=False)
     conn.close()

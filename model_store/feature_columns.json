@@ -1,0 +1,8 @@
+[
+  "text_clean",
+  "text_len",
+  "word_count",
+  "channel_email",
+  "channel_chat",
+  "channel_app"
+]

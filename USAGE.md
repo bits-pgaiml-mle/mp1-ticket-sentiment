@@ -76,7 +76,7 @@ python monitoring/check_drift.py
 
 ```powershell
 python data/prepare_dataset.py --source support_tickets
-python data/validate.py
+python validation/validate_data.py
 python features/build_features.py
 python training/train.py
 uvicorn serving.api:app --reload --port 8000
@@ -87,12 +87,13 @@ python monitoring/check_drift.py
 | Step | Entry file |
 |------|------------|
 | Prepare tickets | `data/prepare_dataset.py` (`--source amazon\|yelp\|sentiment140\|support_tickets\|all`) |
-| Validate | `data/validate.py` |
-| Features | `features/build_features.py` |
+| Validate | `validation/validate_data.py` (shim: `data/validate.py`) |
+| Features | `features/build_features.py` → `feature_store/feature_store.db` |
 | Train | `training/train.py` |
 | Serve | `serving/api.py` via uvicorn |
+| UI | `streamlit run ui/app.py` |
 | Drift simulate | `monitoring/simulate_concept_drift.py` |
-| Drift check | `monitoring/check_drift.py` |
+| Drift check | `monitoring/check_drift.py` (mean-shift + PSI) |
 
 ---
 
@@ -143,7 +144,7 @@ Drift:
 
 ```python
 !python data/prepare_dataset.py --source support_tickets
-!python data/validate.py
+!python validation/validate_data.py
 !python features/build_features.py
 !python training/train.py
 ```
@@ -167,7 +168,7 @@ Possible with background + ngrok; **not required**. Prefer TestClient for demos.
 
 ---
 
-## 4. Docker
+## Docker
 
 Requires a trained `model_store/sentiment_model.joblib` (run Option A first).
 
@@ -176,7 +177,24 @@ docker build -f docker/Dockerfile -t mp1-ticket-sentiment .
 docker run --rm -p 8000:8000 mp1-ticket-sentiment
 ```
 
+VaayuGrid-style multi-service (mlflow | trainer | api | monitor):
+
+```bash
+docker compose up -d mlflow
+docker compose run --rm trainer
+docker compose up -d api
+docker compose run --rm monitor
+```
+
 Then call `/health` and `/predict` as in [reports/api_examples.md](reports/api_examples.md).
+
+### Streamlit UI (Teams Lab4)
+
+With the API running:
+
+```bash
+streamlit run ui/app.py
+```
 
 ---
 

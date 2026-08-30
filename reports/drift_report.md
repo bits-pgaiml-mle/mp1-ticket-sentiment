@@ -8,10 +8,10 @@
 ## Monitoring signals
 
 - Prediction DB: `monitoring/predictions.db`
-- Compared against training feature store: `data/feature_store.db`
-- Numeric shifts: `text_len`, `word_count` (z-style shift vs train std)
-- Channel mix and predicted label distribution
-- Drift threshold from `configs/config.yaml`: `monitoring.drift_shift_threshold = 0.8`
+- Compared against training feature store: `feature_store/feature_store.db`
+- Numeric features: `text_len`, `word_count`
+- Checks: mean-shift (z-style) **and** Population Stability Index (PSI; Taxila VaayuGrid M6)
+- Thresholds from `configs/config.yaml`: `drift_shift_threshold = 0.8`, `psi_alert = 0.25`
 
 ## Drift scenario
 
@@ -27,7 +27,7 @@ Captured run (8 production predictions):
 Production channel mix: email 37.5%, chat 37.5%, app 25.0%.  
 Predicted labels under drift: neutral 50.0%, negative 37.5%, positive 12.5%.
 
-Interpretation: shorter slang tickets shift length/word features well beyond threshold, and confidence scores drop (often ~0.4–0.6), which is a useful early warning even before labeled accuracy is available.
+Interpretation: shorter slang tickets shift length/word features well beyond threshold, and confidence scores drop (often ~0.4–0.6), which is a useful early warning even before labeled accuracy is available. PSI on the same features also exceeds 0.25 and exits non-zero (`RETRAINING TRIGGER FIRED`) — VaayuGrid/Taxila M6 behavior.
 
 ## Retraining trigger
 

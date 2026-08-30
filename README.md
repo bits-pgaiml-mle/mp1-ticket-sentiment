@@ -11,69 +11,55 @@ raw tickets → Pandera validation → shared features + SQLite feature store �
 
 See **[reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)** for progress. M2–M5 pipeline, DVC, DistilBERT comparison, API/drift evidence, and submission reports are complete; remaining team actions are Taxila group upload and demo recording.
 
-## Architecture (Taxila-style)
+## Architecture (Taxila / Teams-style)
 
 ```text
-data/prepare_dataset.py       (--source amazon | yelp | sentiment140 | support_tickets | all)
+data/prepare_dataset.py
         |
         v
-data/raw/tickets.csv          (immutable raw)
+data/raw/tickets.csv
         |
         v
-data/validate.py              (Pandera schema + statistical checks)
+validation/validate_data.py   (Pandera; Teams validation/ layout)
         |
         v
-features/build_features.py    (shared clean_text + channel flags)
+features/build_features.py    (shared build_feature_row for train + serve)
         |
-        +--> data/feature_store.db      (offline feature store)
-        +--> data/feature_schema.json   (feature contract)
+        +--> feature_store/feature_store.db
+        +--> model_store/feature_columns.json
         |
         v
-training/train.py             (MLflow: LogReg C=1/C=10 + LinearSVC)
+training/train.py             (MLflow multi-run)
         |
         +--> model_store/sentiment_model.joblib
         |
         v
-serving/api.py                (FastAPI + Pydantic + prediction logging)
+serving/                      (Lab4: api + model_loader + inference_schema)
+        |
+        +--> ui/app.py        (Streamlit calls /predict only)
         |
         v
-monitoring/check_drift.py     (shift checks + retrain trigger notes)
+monitoring/check_drift.py     (mean-shift + PSI)
 ```
 
 ## Repository layout
 
 ```text
 mp1-ticket-sentiment/
-├── data/
-│   ├── raw/                 # immutable raw tickets
-│   ├── prepare_dataset.py
-│   ├── generate_data.py
-│   ├── validate.py          # Pandera
-│   ├── external/kaggle/{amazon,yelp,sentiment140,support_tickets}/
-│   ├── feature_store.db     # generated
-│   └── feature_schema.json  # generated
-├── features/
-│   ├── text_utils.py        # shared train/serve cleaning
-│   └── build_features.py
-├── training/train.py
-├── serving/api.py
+├── data/                    # prepare + immutable raw
+├── validation/              # Pandera (Teams layout)
+├── features/                # shared train/serve feature logic
+├── feature_store/           # SQLite offline store
+├── training/
+├── serving/                 # api.py, model_loader.py, inference_schema.py
 ├── monitoring/
-│   ├── logger.py
-│   ├── check_drift.py
-│   └── simulate_concept_drift.py
-├── model_store/
-├── reports/
-├── configs/
-│   ├── config.yaml
-│   └── data_source.yaml
-├── scripts/
-│   ├── run_m2_pipeline.py   # Option A: Week 1 / M2
-│   ├── run_train.py         # Option A: M2 + M3
-│   ├── run_pipeline.py      # alias for run_train.py
-│   └── snapshot_datasets.py # DVC: all data-source snapshots
-├── dvc.yaml / dvc.lock
-├── docs/DVC.md
-└── USAGE.md
+├── model_store/             # joblib + feature_columns.json
+├── ui/app.py                # Streamlit (Lab4 pattern)
+├── tools/verify_setup.py
+├── scripts/                 # Option A runners
+├── docker/Dockerfile
+├── docker-compose.yml       # mlflow | trainer | api | monitor
+└── reports/
 ```
 
 ## Usage (local + Colab)
@@ -90,9 +76,11 @@ There are **two execution paths**:
 ### Local — Option A (quick, recommended)
 
 ```bash
+python tools/verify_setup.py
 python scripts/run_m2_pipeline.py
 python scripts/run_train.py
 uvicorn serving.api:app --reload --port 8000
+# optional UI (separate terminal): streamlit run ui/app.py
 python monitoring/simulate_concept_drift.py
 python monitoring/check_drift.py
 ```
@@ -101,7 +89,7 @@ python monitoring/check_drift.py
 
 ```bash
 python data/prepare_dataset.py --source support_tickets
-python data/validate.py
+python validation/validate_data.py
 python features/build_features.py
 python training/train.py
 uvicorn serving.api:app --reload --port 8000
