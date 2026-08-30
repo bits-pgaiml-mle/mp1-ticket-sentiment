@@ -9,8 +9,8 @@ stages:
       size: 1101
     - path: data/generate_data.py
       hash: md5
-      md5: 410f4412703a904629d9d01f97c0bd2d
-      size: 2993
+      md5: f76b9733134a3d2776668cab53d2219a
+      size: 10782
     - path: data/prepare_dataset.py
       hash: md5
       md5: 4c4eaabbd282c63c9812c92b826da758
@@ -22,10 +22,10 @@ stages:
     outs:
     - path: data/raw/tickets.csv
       hash: md5
-      md5: 8e81b25d2dd35b70377d797ec5be6d4e
-      size: 145762
+      md5: 5aeb00447441c41188275721864f55a1
+      size: 225904
     - path: data/versions
       hash: md5
-      md5: fa6d255dc1c1871c0c291f62c114fda2.dir
-      size: 224671
+      md5: 032c1eb07e53e7f2fb887719aef81f37.dir
+      size: 347806
       nfiles: 5
