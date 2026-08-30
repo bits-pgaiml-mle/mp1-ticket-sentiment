@@ -36,7 +36,14 @@ git tag -f week1-data-v1
 python data/prepare_dataset.py --source yelp
 ```
 
-## Local remote (optional)
+## After snapshot — run the M2 pipeline
+
+```bash
+python validation/validate_data.py
+python features/build_features.py
+```
+
+This writes `feature_store/feature_store.db` and `model_store/feature_columns.json` from the active `data/raw/tickets.csv`.
 
 ```bash
 dvc remote add -d localremote ./dvc-storage

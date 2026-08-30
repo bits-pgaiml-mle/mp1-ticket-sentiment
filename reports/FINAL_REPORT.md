@@ -6,14 +6,14 @@
 |------|-------------|
 | **GitHub repository (public)** | https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment |
 | **Demo recording (Drive)** | `TODO: paste Google Drive / OneDrive share link here` |
-| **Demo script used** | [DEMO_SCRIPT.md](DEMO_SCRIPT.md) (target 10–15 min with voiceover) |
+| **Demo script used** | [DEMO_SCRIPT.md](DEMO_SCRIPT.md) (target **10–15 min** with voiceover) |
 | **Quick run** | See repo [USAGE.md](../USAGE.md) — Option A |
 | **Taxila upload tip** | Upload this report (or a short PDF/zip &lt; 10 MB). Keep large video + artifacts on Drive; put links here. |
 
 **Access checklist before submit**
 
 1. Repo is **public** (or evaluators can clone without requesting access).
-2. Drive folder is shared so **anyone with the link** can view (or “anyone at BITS” if restricted).
+2. Drive folder is shared so **anyone with the link** can view.
 3. One group member uploads to Taxila (group-level grading).
 4. Links above are filled and tested in an incognito window.
 
@@ -31,33 +31,34 @@ A customer-support / e-commerce platform needs to classify incoming ticket text 
 ## 2. Architecture
 
 ```text
-prepare_dataset → raw tickets → Pandera validate → shared features + SQLite store
+prepare_dataset → raw tickets → validation/validate_data.py (Pandera)
+        → features/build_features.py (shared build_feature_row)
+        → feature_store/feature_store.db + model_store/feature_columns.json
         → MLflow (LogReg / LinearSVC / DistilBERT) → promote classical joblib
-        → FastAPI /predict + prediction DB → drift check + retrain triggers
+        → serving/ (Lab4: api + model_loader + inference_schema) + ui/app.py
+        → prediction logs (SQLite and/or JSONL) → mean-shift + PSI drift
 ```
 
-Taxila patterns used: immutable raw data, feature schema contract, offline feature store, MLflow multi-run comparison, FastAPI packaging, prediction logging, and drift detective style checks (M2–M5 ELS / Teams churn labs adapted to text).
+Aligned with Teams churn labs (M2–M4), Taxila ELS patterns, and VaayuGrid Docker/PSI ideas (M5/M6). Instructor guidance: end-to-end pipeline matters more than any single tool; Docker is optional polish.
 
 ## 3. M1 — Foundations (gaps addressed)
 
-Notebook-style fragility addressed in this repo:
-
 | Gap | Fix |
 |-----|-----|
-| Hidden preprocessing in notebooks | Shared `features/text_utils.py` for train and serve |
+| Hidden preprocessing in notebooks | Shared `build_feature_row` / `text_utils` for train and serve |
 | Unversioned data | DVC snapshots under `data/versions/` + tag `week1-data-v1` |
-| No input validation | Pandera schema + statistical checks |
+| No input validation | Pandera in `validation/validate_data.py` |
 | No experiment tracking | MLflow experiment `ticket_sentiment_prediction` |
-| Ad-hoc serving | FastAPI with Pydantic edge-case handling |
-| No monitoring | SQLite prediction logs + drift script |
+| Ad-hoc serving | FastAPI Lab4 split + Pydantic schema |
+| No monitoring | SQLite/JSONL prediction logs + drift script |
 
 ## 4. M2 — Data engineering & versioning
 
-- Sources: `support_tickets` (default synthetic), plus `amazon` / `yelp` / `sentiment140` / `all` via `configs/data_source.yaml`.
-- Synthetic generator expanded with paraphrases, ambiguity, typos, and light label noise so metrics are not trivially 1.0 (~1463 unique texts / 1500 rows).
+- Sources: `support_tickets` (default synthetic), plus `amazon` / `yelp` / `sentiment140` / `all`.
+- Synthetic generator uses paraphrases, ambiguity, typos, and light label noise (~1463 unique texts / 1500 rows) so metrics are not trivially 1.0.
 - Validation evidence: `reports/validation_log.txt`.
-- Features: cleaned text, `text_len`, `word_count`, channel one-hots → SQLite `ticket_features`.
-- Versioning: `dvc.yaml` / `dvc.lock`, local remote `dvc-storage/`, docs in `docs/DVC.md`.
+- Features: cleaned text, `text_len`, `word_count`, channel one-hots → `feature_store/feature_store.db`.
+- Versioning: `dvc.yaml` / `dvc.lock`, docs in `docs/DVC.md`.
 
 ## 5. M3 — Experimentation
 
@@ -68,29 +69,36 @@ Notebook-style fragility addressed in this repo:
 | **linear_svc** | **0.8423** | **served** |
 | distilbert_finetune | 0.8683 | comparison only |
 
-TF-IDF is fit on the training split only (leakage lesson from Taxila M2). DistilBERT is slightly more accurate but heavier; production stays classical. Details: `reports/model_comparison.md`.
+TF-IDF is fit on the training split only. DistilBERT is slightly more accurate but heavier; production stays classical. Details: `reports/model_comparison.md`.
 
 ## 6. M4 — Packaging & deployment
 
-- Artifact: `model_store/sentiment_model.joblib` (+ label encoder / decision JSON).
-- API: `GET /health`, `POST /predict` with empty-text and bad-channel 400s.
+- Artifact: `model_store/sentiment_model.joblib`.
+- API: `GET /health`, `POST /predict` (empty text → 400; invalid channel → 422).
+- Lab4 modules: `serving/inference_schema.py`, `serving/model_loader.py`.
+- Optional UI: `streamlit run ui/app.py`.
 - Evidence: `reports/api_examples.md`, `reports/api_smoke_log.txt`.
-- Docker: `docker/Dockerfile` (slim classical deps only).
+- Docker: `docker/Dockerfile`; optional Compose: `docker-compose.yml` (mlflow / trainer / api / monitor).
 
 ## 7. M5 — Monitoring, drift, retraining
 
-- Simulation posts slang/short tickets; length/word shifts flagged **DRIFTED** (shift ≈ 2.0 > 0.8 threshold).
-- Retrain if rolling accuracy < 0.80 with ≥200 labels, or feature shift exceeds threshold for 3 consecutive batches.
+- Logs: SQLite `monitoring/predictions.db` and/or JSONL `monitoring/predictions.jsonl` (`log_backend: both`).
+- Simulation posts slang/short tickets; mean-shift and **PSI** flag `text_len` / `word_count` (PSI &gt; 0.25 → exit 1).
+- Retrain if rolling accuracy &lt; 0.80 with ≥200 labels, shift exceeds threshold for 3 batches, or PSI alert fires.
 - Evidence: `reports/drift_report.md`, `reports/drift_*_log.txt`.
 
 ## 8. How to reproduce
 
 ```bash
 pip install -r requirements.txt
+python tools/verify_setup.py
 python scripts/run_m2_pipeline.py
 python scripts/run_train.py
 uvicorn serving.api:app --port 8000
+# optional: streamlit run ui/app.py
 # optional: pip install -r requirements-transformer.txt && python training/train_transformer.py
+python monitoring/simulate_concept_drift.py
+python monitoring/check_drift.py
 ```
 
 Full local/Colab/Docker steps: `USAGE.md`.
@@ -99,6 +107,7 @@ Full local/Colab/Docker steps: `USAGE.md`.
 
 - Course brief: *ML Engineering Mini-Project Assignment Brief* (Flavor C).
 - Suggested datasets: Amazon/Yelp reviews, Twitter Sentiment140, support-ticket style text.
-- Tools: scikit-learn, Pandera, MLflow, DVC, FastAPI, Hugging Face DistilBERT (comparison).
-- Course references: Taxila M1–M5 ELS materials; Teams churn week labs for feature-store / serving patterns.
+- Tools: scikit-learn, Pandera, MLflow, DVC, FastAPI, Streamlit, Hugging Face DistilBERT (comparison).
+- Course references: Taxila M1–M6 ELS / Docker demo; Teams churn week labs (feature store, MLflow, Lab4 serving).
+- Lecture guidance (submission): group upload, public Git, Drive demo link, report ≤10 MB.
 - Texts: Crowe et al., *Machine Learning Production Systems*; Burkov, *Machine Learning Engineering*; McMahon, *MLE with Python*.

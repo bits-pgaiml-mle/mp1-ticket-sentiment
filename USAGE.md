@@ -49,6 +49,7 @@ Or set `configs/data_source.yaml` (default: `support_tickets`). Drop CSVs under 
 ### 1.2 Option A — easiest (recommended)
 
 ```powershell
+python tools/verify_setup.py
 python scripts/run_m2_pipeline.py
 python scripts/run_train.py
 ```
@@ -61,16 +62,23 @@ python scripts/run_train.py
 uvicorn serving.api:app --reload --port 8000
 ```
 
-**Terminal 2 — predict + drift**
+**Terminal 2 — UI (optional, Lab4)**
 
 ```powershell
-curl -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d "{\"text\":\"Support resolved my issue quickly, thank you!\",\"channel\":\"chat\"}"
+streamlit run ui/app.py
+```
+
+**Terminal 3 — predict + drift**
+
+```powershell
+curl -s -X POST http://127.0.0.1:8000/predict -H "Content-Type: application/json" -d "{\"text\":\"Support resolved my issue quickly, thank you!\",\"channel\":\"chat\"}"
 python monitoring/simulate_concept_drift.py
 python monitoring/check_drift.py
 ```
 
 - Swagger: http://127.0.0.1:8000/docs  
 - MLflow UI (optional): `mlflow ui` → http://127.0.0.1:5000  
+- Prediction logs: `monitoring/predictions.db` and/or `monitoring/predictions.jsonl` (see § Prediction log backends)
 
 ### 1.3 Option B — step by step
 
@@ -161,10 +169,11 @@ Possible with background + ngrok; **not required**. Prefer TestClient for demos.
 
 | Stage | Option A | Option B |
 |-------|----------|----------|
-| M2 data | `scripts/run_m2_pipeline.py` | prepare → validate → features |
+| Setup check | `tools/verify_setup.py` | same |
+| M2 data | `scripts/run_m2_pipeline.py` | prepare → `validation/validate_data.py` → features |
 | M3 train | `scripts/run_train.py` (includes M2) | `training/train.py` |
-| M4 serve | uvicorn / TestClient | same |
-| M5 drift | simulate + check_drift | same |
+| M4 serve | uvicorn / TestClient / Streamlit UI | same |
+| M5 drift | simulate + check_drift (mean-shift + PSI) | same |
 
 ---
 
@@ -202,19 +211,20 @@ Set in `configs/config.yaml`:
 
 ```yaml
 monitoring:
-  log_backend: both   # sqlite | jsonl | both
+  log_backend: both          # sqlite | jsonl | both
+  drift_read_backend: auto   # auto | sqlite | jsonl
   predictions_db: monitoring/predictions.db
   predictions_jsonl: monitoring/predictions.jsonl
 ```
 
 Or override at runtime:
 
-```bash
-$env:PREDICTION_LOG_BACKEND="jsonl"   # PowerShell
+```powershell
+$env:PREDICTION_LOG_BACKEND="jsonl"   # or sqlite / both
 uvicorn serving.api:app --port 8000
 ```
 
-`monitoring/check_drift.py` reads whichever backend(s) are enabled.
+`monitoring/check_drift.py` reads the configured backend(s). When both have data, `auto` prefers SQLite so the same event is not double-counted.
 
 ---
 

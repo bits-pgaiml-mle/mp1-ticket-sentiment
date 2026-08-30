@@ -14,7 +14,7 @@
 | linear_svc | LinearSVC | C=1.0, TF-IDF+numeric | 0.8433 | 0.8423 | best classical |
 | distilbert_finetune | DistilBERT | 1 epoch, max_len=96, batch=8 | 0.8688 | 0.8683 | comparison-only; ~28 ms/text CPU |
 
-Classical training used the full feature store (1500 tickets). DistilBERT used a stratified sample of 800 rows for CPU-friendly fine-tuning (see `training/train_transformer.py`).
+Classical training used the full feature store (`feature_store/feature_store.db`, 1500 tickets). DistilBERT used a stratified sample of 800 rows for CPU-friendly fine-tuning (see `training/train_transformer.py`). Feature contract: `model_store/feature_columns.json`.
 
 ## Decision — production model
 

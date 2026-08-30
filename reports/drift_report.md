@@ -3,45 +3,49 @@
 **Project:** mp1-ticket-sentiment (Flavor C)  
 **Module:** M5 — Monitoring, Drift & Retraining  
 **Evidence logs:** `reports/drift_sim_log.txt`, `reports/drift_check_log.txt`  
-**Aligned with:** Taxila M5 ELS (monitoring / observability / retraining)
+**Aligned with:** Taxila M5 ELS + VaayuGrid M6 PSI pattern
 
 ## Monitoring signals
 
-- Prediction logs: SQLite `monitoring/predictions.db` and/or JSONL `monitoring/predictions.jsonl`
-  (config `monitoring.log_backend`: `sqlite` | `jsonl` | `both`; default `both`)
-- Compared against training feature store: `feature_store/feature_store.db`
+- Prediction logs: SQLite `monitoring/predictions.db` and/or JSONL `monitoring/predictions.jsonl`  
+  (`monitoring.log_backend`: `sqlite` | `jsonl` | `both`; default `both`)
+- Training baseline: `feature_store/feature_store.db` table `ticket_features`
 - Numeric features: `text_len`, `word_count`
-- Checks: mean-shift (z-style) **and** Population Stability Index (PSI; Taxila VaayuGrid M6)
-- Thresholds from `configs/config.yaml`: `drift_shift_threshold = 0.8`, `psi_alert = 0.25`
+- Checks: mean-shift (z-style) **and** Population Stability Index (PSI)
+- Thresholds: `drift_shift_threshold = 0.8`, `psi_alert = 0.25`
+- When both log backends exist, drift reads one source (`drift_read_backend: auto` prefers SQLite)
 
 ## Drift scenario
 
 `monitoring/simulate_concept_drift.py` posts slang/topic-shifted tickets (`bruh`, `fr`, `no cap`, short chat phrasing) to the live API.
 
-Captured run (8 production predictions):
+Captured run (example batch):
 
 | Feature | Train mean | Prod mean | Shift | Flag |
 |---------|------------|-----------|-------|------|
 | text_len | 104.25 | 38.12 | 2.01 | DRIFTED |
 | word_count | 17.56 | 7.12 | 1.90 | DRIFTED |
 
-Production channel mix: email 37.5%, chat 37.5%, app 25.0%.  
-Predicted labels under drift: neutral 50.0%, negative 37.5%, positive 12.5%.
+PSI on the same features also exceeds 0.25 → status **SHIFTED** → process exits **1** (`RETRAINING TRIGGER FIRED`).
 
-Interpretation: shorter slang tickets shift length/word features well beyond threshold, and confidence scores drop (often ~0.4–0.6), which is a useful early warning even before labeled accuracy is available. PSI on the same features also exceeds 0.25 and exits non-zero (`RETRAINING TRIGGER FIRED`) — VaayuGrid/Taxila M6 behavior.
+Production channel mix (example): email 37.5%, chat 37.5%, app 25.0%.  
+Predicted labels under drift (example): neutral 50.0%, negative 37.5%, positive 12.5%.
+
+Interpretation: shorter slang tickets shift length/word features well beyond threshold; confidence often drops (~0.4–0.6) as an early warning before labels arrive.
 
 ## Retraining trigger
 
-Retrain when **either**:
+Retrain when **any** of:
 
-1. Rolling labeled accuracy < 0.80 with at least 200 newly labeled tickets, or  
-2. `text_len` / `word_count` shift score > threshold for **3 consecutive batches**.
+1. Rolling labeled accuracy &lt; 0.80 with at least 200 newly labeled tickets, or  
+2. `text_len` / `word_count` mean-shift &gt; threshold for **3 consecutive batches**, or  
+3. PSI &gt; `psi_alert` on any monitored numeric feature (script exits non-zero for CI/cron).
 
-Operational notes (Taxila M5 pattern):
+Operational notes:
 
-- Log every prediction with features used at serve time (shared `clean_text` / channel flags).
-- Prefer feature/prediction-distribution monitors when labels lag.
-- After retrain, promote a new joblib only if held-out macro-F1 improves and smoke `/predict` passes.
+- Log every prediction with serve-time features (shared `build_feature_row`).
+- Prefer distribution monitors when labels lag.
+- After retrain, promote a new joblib only if held-out macro-F1 improves and `/predict` smoke passes.
 - Keep DistilBERT as an offline experiment unless latency budget changes.
 
 Reproduce:
