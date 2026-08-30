@@ -3,6 +3,7 @@
 **Project:** mp1-ticket-sentiment (Flavor C)  
 **Goal:** Walk graders through M2→M5 with live commands and narration.  
 **Instructor guidance:** about **10–15 minutes** with voiceover (not 30–40).  
+**Practice first:** use the full runbook **[DEMO_INSTRUCTIONS.md](DEMO_INSTRUCTIONS.md)** (Windows commands, talking points, checklist), then record with this timeline.  
 **After recording:** upload to Google Drive / OneDrive → share with link access → paste URL into the **Submission links** table at the top of [FINAL_REPORT.md](FINAL_REPORT.md).
 
 ## 0:00–1:00 — Hook & architecture
