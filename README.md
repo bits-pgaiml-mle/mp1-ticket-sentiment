@@ -111,6 +111,13 @@ python data/prepare_dataset.py --source all
 
 (`--source synthetic` aliases to `support_tickets`.) Drop-in layout: `data/external/kaggle/README.md`.
 
+Per-source train/validate profiles: [`reports/datasets/COMPARISON.md`](reports/datasets/COMPARISON.md). Regenerate:
+
+```bash
+python scripts/expand_demo_datasets.py   # local amazon/yelp/sentiment140 extracts
+python scripts/generate_dataset_reports.py
+```
+
 ### Colab — Option A
 
 ```python
