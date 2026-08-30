@@ -1,0 +1,5 @@
+﻿PASS: 1500 tickets validated ù schema + statistical checks passed
+label
+neutral     524
+negative    496
+positive    480
