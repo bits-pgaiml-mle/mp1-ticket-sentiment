@@ -7,7 +7,8 @@
 
 ## Monitoring signals
 
-- Prediction DB: `monitoring/predictions.db`
+- Prediction logs: SQLite `monitoring/predictions.db` and/or JSONL `monitoring/predictions.jsonl`
+  (config `monitoring.log_backend`: `sqlite` | `jsonl` | `both`; default `both`)
 - Compared against training feature store: `feature_store/feature_store.db`
 - Numeric features: `text_len`, `word_count`
 - Checks: mean-shift (z-style) **and** Population Stability Index (PSI; Taxila VaayuGrid M6)

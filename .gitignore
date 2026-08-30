@@ -247,7 +247,9 @@ model_store/*.json
 !model_store/*_decision.json
 !model_store/feature_columns.json
 monitoring/predictions.db
+monitoring/predictions.jsonl
 monitoring/logs/*.csv
+!monitoring/logs/.gitkeep
 mlflow.db
 mlruns/
 mlartifacts/

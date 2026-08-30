@@ -196,6 +196,26 @@ With the API running:
 streamlit run ui/app.py
 ```
 
+### Prediction log backends (SQLite / JSONL)
+
+Set in `configs/config.yaml`:
+
+```yaml
+monitoring:
+  log_backend: both   # sqlite | jsonl | both
+  predictions_db: monitoring/predictions.db
+  predictions_jsonl: monitoring/predictions.jsonl
+```
+
+Or override at runtime:
+
+```bash
+$env:PREDICTION_LOG_BACKEND="jsonl"   # PowerShell
+uvicorn serving.api:app --port 8000
+```
+
+`monitoring/check_drift.py` reads whichever backend(s) are enabled.
+
 ---
 
 ## 5. Optional DistilBERT comparison

@@ -34,6 +34,11 @@ serving:
   model_version: ticket-sentiment-v1
 
 monitoring:
+  # sqlite | jsonl | both  (override with env PREDICTION_LOG_BACKEND)
+  log_backend: both
+  # auto | sqlite | jsonl — which log drift reads when both exist
+  drift_read_backend: auto
   predictions_db: monitoring/predictions.db
+  predictions_jsonl: monitoring/predictions.jsonl
   drift_shift_threshold: 0.8
   psi_alert: 0.25

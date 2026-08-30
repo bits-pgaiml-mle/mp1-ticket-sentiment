@@ -48,6 +48,10 @@ services:
     container_name: mp1c_api
     ports:
       - "8000:8000"
+    environment:
+      PREDICTION_LOG_BACKEND: both
+      PREDICTIONS_DB: /app/monitoring/predictions.db
+      PREDICTION_LOG: /app/monitoring/predictions.jsonl
     volumes:
       - model_store:/app/model_store
       - feature_store:/app/feature_store
@@ -67,6 +71,10 @@ services:
     image: mp1-ticket-sentiment:1.0.0
     container_name: mp1c_monitor
     command: python monitoring/check_drift.py
+    environment:
+      PREDICTION_LOG_BACKEND: both
+      PREDICTIONS_DB: /app/monitoring/predictions.db
+      PREDICTION_LOG: /app/monitoring/predictions.jsonl
     volumes:
       - model_store:/app/model_store:ro
       - feature_store:/app/feature_store:ro
