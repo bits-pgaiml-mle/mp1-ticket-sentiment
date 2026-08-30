@@ -164,3 +164,27 @@ Possible with background + ngrok; **not required**. Prefer TestClient for demos.
 | M3 train | `scripts/run_train.py` (includes M2) | `training/train.py` |
 | M4 serve | uvicorn / TestClient | same |
 | M5 drift | simulate + check_drift | same |
+
+---
+
+## 4. Docker
+
+Requires a trained `model_store/sentiment_model.joblib` (run Option A first).
+
+```bash
+docker build -f docker/Dockerfile -t mp1-ticket-sentiment .
+docker run --rm -p 8000:8000 mp1-ticket-sentiment
+```
+
+Then call `/health` and `/predict` as in [reports/api_examples.md](reports/api_examples.md).
+
+---
+
+## 5. Optional DistilBERT comparison
+
+```bash
+pip install -r requirements-transformer.txt
+python training/train_transformer.py
+```
+
+Does not change the served classical model. Metrics: `model_store/transformer_decision.json`.

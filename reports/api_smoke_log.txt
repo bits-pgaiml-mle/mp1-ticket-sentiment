@@ -1,0 +1,6 @@
+GET /health 200 {"status":"ok","service":"ticket-sentiment","model_loaded":true,"model_version":"ticket-sentiment-v1"}
+POST /predict 200 {"label":"positive","confidence":0.8430912034673379,"model_version":"ticket-sentiment-v1"}
+POST /predict 200 {"label":"negative","confidence":0.6988548199975971,"model_version":"ticket-sentiment-v1"}
+POST /predict 200 {"label":"neutral","confidence":0.8173943390954196,"model_version":"ticket-sentiment-v1"}
+empty text 400 {"detail":"text must not be empty"}
+bad channel 400 {"detail":"channel must be one of: email, chat, app"}
