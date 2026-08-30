@@ -9,7 +9,7 @@ raw tickets → Pandera validation → shared features + SQLite feature store �
 
 ## Process status
 
-See **[reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)**. Code/evidence for M1–M5 is complete. Remaining team actions: make repo public, record 10–15 min demo to Drive, fill Drive link in [reports/FINAL_REPORT.md](reports/FINAL_REPORT.md), one member uploads to Taxila (≤10 MB).
+See **[reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)**. Code/evidence for M1–M5 is complete. Demo recording link is in [reports/FINAL_REPORT.md](reports/FINAL_REPORT.md). Remaining team actions: confirm repo is public, confirm Drive share is “anyone with the link”, one member uploads to Taxila (≤10 MB).
 
 ## Architecture (Taxila / Teams-style)
 
@@ -194,7 +194,7 @@ Does **not** replace the served classical model. See **[reports/model_comparison
 
 ## Submission package
 
-- Evaluator links (fill Drive URL): [reports/FINAL_REPORT.md](reports/FINAL_REPORT.md)
+- Evaluator links (GitHub + demo Drive): [reports/FINAL_REPORT.md](reports/FINAL_REPORT.md)
 - Demo outline (10–15 min voiceover): [reports/DEMO_SCRIPT.md](reports/DEMO_SCRIPT.md)
 - Process tracker: [reports/PROCESS_UPDATES.md](reports/PROCESS_UPDATES.md)
 

@@ -5,7 +5,7 @@
 | Item | Link / note |
 |------|-------------|
 | **GitHub repository (public)** | https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment |
-| **Demo recording (Drive)** | `TODO: paste Google Drive / OneDrive share link here` |
+| **Demo recording (Drive)** | https://drive.google.com/file/d/1N__vDnO-45HFbBivJ_CcjM5wASdWPTsA/view?usp=drive_link |
 | **Demo script used** | [DEMO_INSTRUCTIONS.md](DEMO_INSTRUCTIONS.md) (practice runbook) + [DEMO_SCRIPT.md](DEMO_SCRIPT.md) (target **10–15 min** with voiceover) |
 | **Quick run** | See repo [USAGE.md](../USAGE.md) — Option A |
 | **Taxila upload tip** | Upload this report (or a short PDF/zip &lt; 10 MB). Keep large video + artifacts on Drive; put links here. |

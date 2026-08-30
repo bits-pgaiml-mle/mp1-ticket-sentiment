@@ -80,7 +80,7 @@
 
 - [x] `reports/FINAL_REPORT.md` (evaluator links at top)
 - [x] `reports/DEMO_SCRIPT.md` (10–15 min voiceover target)
-- [ ] Recorded demo video → Drive → paste URL in FINAL_REPORT
+- [x] Recorded demo video → Drive → paste URL in FINAL_REPORT
 - [ ] GitHub repo set **public**
 - [ ] Taxila group membership / one-member upload (≤10 MB)
 - [ ] Team names/roles in README
