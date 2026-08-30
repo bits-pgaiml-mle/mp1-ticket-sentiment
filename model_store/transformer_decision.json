@@ -1,0 +1,17 @@
+{
+  "run_name": "distilbert_finetune",
+  "base_model": "distilbert-base-uncased",
+  "metrics": {
+    "accuracy": 0.86875,
+    "f1_macro": 0.8682668469686726
+  },
+  "train_seconds": 123.80707179999445,
+  "approx_infer_ms_per_text": 28.33769999415381,
+  "device": "cpu",
+  "note": "Comparison-only run. Production artifact remains the classical pipeline in model_store/sentiment_model.joblib for latency and size.",
+  "label_classes": [
+    "negative",
+    "neutral",
+    "positive"
+  ]
+}

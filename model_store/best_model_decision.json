@@ -1,0 +1,8 @@
+{
+  "best_run": "linear_svc",
+  "metrics": {
+    "accuracy": 0.8433333333333334,
+    "f1_macro": 0.8422550258817864
+  },
+  "justification": "Selected highest macro-F1 among LogisticRegression (C=1/C=10) and LinearSVC. TF-IDF is fit only on the training split to avoid leakage."
+}
