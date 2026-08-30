@@ -1,5 +1,24 @@
 # Final Report — Flavor C Support Ticket / Review Sentiment Classifier
 
+## Submission links (for evaluators — read first)
+
+| Item | Link / note |
+|------|-------------|
+| **GitHub repository (public)** | https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment |
+| **Demo recording (Drive)** | `TODO: paste Google Drive / OneDrive share link here` |
+| **Demo script used** | [DEMO_SCRIPT.md](DEMO_SCRIPT.md) (target 10–15 min with voiceover) |
+| **Quick run** | See repo [USAGE.md](../USAGE.md) — Option A |
+| **Taxila upload tip** | Upload this report (or a short PDF/zip &lt; 10 MB). Keep large video + artifacts on Drive; put links here. |
+
+**Access checklist before submit**
+
+1. Repo is **public** (or evaluators can clone without requesting access).
+2. Drive folder is shared so **anyone with the link** can view (or “anyone at BITS” if restricted).
+3. One group member uploads to Taxila (group-level grading).
+4. Links above are filled and tested in an incognito window.
+
+---
+
 **Course:** PCAM ZC412 Machine Learning Engineering  
 **Group org:** [bits-pgaiml-mle](https://github.com/bits-pgaiml-mle)  
 **Repository:** [mp1-ticket-sentiment](https://github.com/bits-pgaiml-mle/mp1-ticket-sentiment)  

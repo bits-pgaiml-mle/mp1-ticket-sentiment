@@ -1,7 +1,8 @@
 # Demo Script (5–7 minutes)
 
 **Project:** mp1-ticket-sentiment (Flavor C)  
-**Goal:** Walk graders through M2→M5 with live commands. Record with voiceover or present live.
+**Goal:** Walk graders through M2→M5 with live commands. Record with voiceover (instructor guidance: **~10–15 minutes** ideal; keep under ~15).  
+**After recording:** upload to Google Drive / OneDrive, share with link access, paste the URL into the **Submission links** table at the top of [FINAL_REPORT.md](FINAL_REPORT.md).
 
 ## 0:00–0:40 — Hook & architecture
 
